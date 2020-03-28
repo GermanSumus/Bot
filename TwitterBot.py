@@ -1,8 +1,9 @@
-from selenium import webdriver
 from time import sleep
+import json
+
+from selenium import webdriver
 from bs4 import BeautifulSoup
 import requests
-import json
 
 import secret
 
