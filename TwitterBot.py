@@ -1,9 +1,10 @@
 from selenium import webdriver
 from time import sleep
-import secret
 from bs4 import BeautifulSoup
 import requests
 import json
+
+import secret
 
 
 class Twitter_bot():
