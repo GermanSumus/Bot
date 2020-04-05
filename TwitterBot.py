@@ -40,16 +40,17 @@ class Twitter_bot():
         sleep(2)
 
 
-class Wsj_bot():
-    '''Creates a bot to collect all the headlines from WSJ'''
+class Wsj_webscraper():
+    '''Scrapes the wsj to collect all the headlines and urls to articles'''
 
-    def __init__(self, username, password):
-        '''Set up driver and maximize window for consistency'''
-        self.driver = webdriver.Chrome()
-        self.driver.get('https://wsj.com')
-        self.driver.maximize_window()
-        self.usr = username
-        self.pw = password
+    def __init__(self):
+        # '''Set up driver and maximize window for consistency'''
+        # self.driver = webdriver.Chrome()
+        # self.driver.get('https://wsj.com')
+        # self.driver.maximize_window()
+        # self.usr = username
+        # self.pw = password
+        pass
 
     def all_headlines(self):
         '''Collect all headlines from wsj as a dict of the article title and url
@@ -64,26 +65,24 @@ class Wsj_bot():
         with open("Headlines.txt","w+") as file:
             json.dump(result, file)
 
-# Possibly to be split up into a few funtions instead of just One
-# Create a new keywords list, Extend list, Edit List
-def collect_key_words():
-    '''To collect our keywords we manualy enter them in to a list and should
-    really only be used when trying to set up a new criteria for the type
-    of headlines we want to recive. As of now the list of keywords is exteneded
-    each time we run this function'''
-    with open('Keywords.txt', 'r') as file:
-        key_words = json.loads(file.read())
+def extend_key_words():
+    '''The set of keywords is extended each time we run this function'''
+    try:
+        with open('Keywords.txt', 'r') as file:
+            key_words = set(json.loads(file.read()))
+    except json.decoder.JSONDecodeError:
+        print('\nFile is empty. Creating a new keyword set.\n')
+        key_words = set()
     with open('Headlines.txt','r') as file:
-        e = json.loads(file.read())
-    for k, v in e.items():
-        print(k)
+        headlines = json.loads(file.read())
+    for k, v in headlines.items():
+        print('\n' + k)
         words = input('\nWhat key words are importatnt from this article title? : => ').split(' ')
-        # w = k.split(' ')
-        w = [x for x in words if x != '']
-        if len(w):
-            key_words.extend(w)
+        w_filter = [x for x in words if x != '']
+        if w_filter:
+            key_words.update(set(w_filter))
     with open('Keywords.txt', 'w+') as file:
-        json.dump(key_words, file)
+        json.dump(list(key_words), file)
 
 def twitter_post(message):
     bot = Twitter_bot(secret.TwtUsr, secret.TwtPsw)
@@ -92,14 +91,14 @@ def twitter_post(message):
     bot.driver.quit()
 
 def wsj_headlines():
-    bot = Wsj_bot(secret.WsjUsr, secret.WsjPsw)
+    bot = Wsj_webscraper(secret.WsjUsr, secret.WsjPsw)
     bot.all_headlines()
     bot.driver.quit()
 
 def main():
     # twitter_post('Test')
-    wsj_headlines()
-    collect_key_words()
+    # wsj_headlines()
+    extend_key_words()
 
 
 if __name__ == '__main__':
