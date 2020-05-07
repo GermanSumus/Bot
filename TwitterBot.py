@@ -53,8 +53,10 @@ def all_headlines():
     with open("Headlines.txt","w+") as file:
         json.dump(result, file)
 
-def extend_key_words():
-    '''The set of keywords is extended each time we run this function'''
+def create_key_words():
+    '''Looping through the headlines you can create a list of keyword seperated
+    by a space, any duplicates will be removed and if no keyword is needed for
+    the headline you can continue with enter.'''
     try:
         with open('Keywords.txt', 'r') as file:
             key_words = set(json.loads(file.read()))
@@ -72,6 +74,11 @@ def extend_key_words():
     with open('Keywords.txt', 'w+') as file:
         json.dump(list(key_words), file)
 
+def edit_key_words():
+    '''Using the existing list of keywords, loop through each one chosing which
+    to keep, which to delete, and if you want to add any'''
+    pass
+
 def twitter_post(message):
     bot = Twitter_bot(secret.TwtUsr, secret.TwtPsw)
     bot.log_in()
@@ -85,7 +92,7 @@ def wsj_headlines():
 def main():
     wsj_headlines()
     # twitter_post('Test')
-    extend_key_words()
+    create_key_words()
 
 if __name__ == '__main__':
     main()
