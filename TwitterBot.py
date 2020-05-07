@@ -40,30 +40,18 @@ class Twitter_bot():
         sleep(2)
 
 
-class Wsj_webscraper():
-    '''Scrapes the wsj to collect all the headlines and urls to articles'''
-
-    def __init__(self):
-        # '''Set up driver and maximize window for consistency'''
-        # self.driver = webdriver.Chrome()
-        # self.driver.get('https://wsj.com')
-        # self.driver.maximize_window()
-        # self.usr = username
-        # self.pw = password
-        pass
-
-    def all_headlines(self):
-        '''Collect all headlines from wsj as a dict of the article title and url
-        link to page, and out put result to Headlines.txt as json object'''
-        r = requests.get('https://www.wsj.com', headers={'User-Agent': 'Custom'})
-        soup = BeautifulSoup(r.text, 'html.parser').find_all('a')
-        headlines = [x for x in soup if x.get('href') != None and x.string != None and '/articles' in x.get('href')]
-        headlines.sort(key=lambda x: len(x.string))
-        url_link = [x.get('href') for x in headlines]
-        articles = [x.string for x in headlines]
-        result = dict(zip(articles, url_link))
-        with open("Headlines.txt","w+") as file:
-            json.dump(result, file)
+def all_headlines():
+    '''Collect all headlines from wsj as a dict of the article title and url
+    link to page, and out put result to Headlines.txt as json object'''
+    r = requests.get('https://www.wsj.com', headers={'User-Agent': 'Custom'})
+    soup = BeautifulSoup(r.text, 'html.parser').find_all('a')
+    headlines = [x for x in soup if x.get('href') != None and x.string != None and '/articles' in x.get('href')]
+    headlines.sort(key=lambda x: len(x.string))
+    url_link = [x.get('href') for x in headlines]
+    articles = [x.string for x in headlines]
+    result = dict(zip(articles, url_link))
+    with open("Headlines.txt","w+") as file:
+        json.dump(result, file)
 
 def extend_key_words():
     '''The set of keywords is extended each time we run this function'''
@@ -91,15 +79,13 @@ def twitter_post(message):
     bot.driver.quit()
 
 def wsj_headlines():
-    bot = Wsj_webscraper(secret.WsjUsr, secret.WsjPsw)
-    bot.all_headlines()
-    bot.driver.quit()
+    '''Collect all headlines and filter out using our keywords in title'''
+    all_headlines()
 
 def main():
+    wsj_headlines()
     # twitter_post('Test')
-    # wsj_headlines()
     extend_key_words()
-
 
 if __name__ == '__main__':
     main()
